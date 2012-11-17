@@ -23,6 +23,7 @@
 
 #include <QWidget>
 #include <QDialog>
+#include <QString>
 
 
 #include "advwidget.h"
@@ -31,6 +32,8 @@
 #include "ui_groupchatdlg.h"
 #include "mucmanager.h"
 #include "advwidget.h"
+
+#include "doceditdlg.h"
 
 using namespace XMPP;
 
@@ -123,6 +126,7 @@ private slots:
 	void unsetConnecting();
 	void action_error(MUCManager::Action, int, const QString&);
 	void updateIdentityVisibility();
+	void activateSDET();
 #ifdef WHITEBOARDING
 	void openWhiteboard();
 #endif
@@ -131,6 +135,7 @@ private slots:
 public:
 	class Private;
 	friend class Private;
+	void openSDET();
 private:
 	Private *d;
 	Ui::GroupChatDlg ui_;
@@ -152,6 +157,7 @@ private:
 	int nicknumber;
 	PsiOptions* options_;
 	QDateTime lastMsgTime_;
+	doceditdlg *SDET;
 };
 
 class GCFindDlg : public QDialog

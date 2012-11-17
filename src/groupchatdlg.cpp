@@ -79,6 +79,7 @@
 #include "mcmdmanager.h"
 #include "lastactivitytask.h"
 #include "psirichtext.h"
+#include "doceditdlg.h"
 
 #include "mcmdsimplesite.h"
 
@@ -652,6 +653,8 @@ GCMainDlg::GCMainDlg(PsiAccount *pa, const Jid &j, TabManager *tabManager)
 	d->state = Private::Connected;
 
 	setAcceptDrops(true);
+	
+	SDET = NULL;
 
 #ifndef Q_WS_MAC
 	setWindowIcon(IconsetFactory::icon("psi/groupChat").icon());
@@ -663,6 +666,8 @@ GCMainDlg::GCMainDlg(PsiAccount *pa, const Jid &j, TabManager *tabManager)
 
 	connect(ui_.pb_topic, SIGNAL(clicked()), SLOT(doTopic()));
 	PsiToolTip::install(ui_.le_topic);
+	
+	connect(ui_.doceditButton, SIGNAL( clicked() ), this, SLOT( activateSDET() ) );
 
 	connect(account()->psi(), SIGNAL(accountCountChanged()), this, SLOT(updateIdentityVisibility()));
 	updateIdentityVisibility();
@@ -776,6 +781,7 @@ GCMainDlg::~GCMainDlg()
 	account()->dialogUnregister(this);
 	delete d->mucManager;
 	delete d;
+	delete SDET;
 }
 
 void GCMainDlg::ensureTabbedCorrectly()
@@ -1006,6 +1012,22 @@ void GCMainDlg::doTopic()
 		m.setSubject(str);
 		m.setTimeStamp(QDateTime::currentDateTime());
 		aSend(m);
+	}
+}
+
+void GCMainDlg::activateSDET()
+{
+	openSDET();
+}
+
+void GCMainDlg::openSDET()
+{
+	if (SDET == NULL) {
+		SDET = new doceditdlg(this);
+		SDET->setWindowTitle("Shared Document Editing Tool - "+this->windowTitle());
+		SDET->show();
+	} else {
+		::bringToFront(SDET);
 	}
 }
 

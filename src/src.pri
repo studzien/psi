@@ -184,7 +184,8 @@ HEADERS += \
 	$$PWD/bookmarkmanagedlg.h \
 	$$PWD/vcardphotodlg.h \
 	$$PWD/psicli.h \
-	$$PWD/coloropt.h
+	$$PWD/coloropt.h \
+	$$PWD/sendthread.h
 
 
 HEADERS += tabcompletion.h
@@ -423,7 +424,8 @@ newcontactlist {
 		$$PWD/contactupdatesmanager.h \
 		$$PWD/statusmenu.h \
 		$$PWD/psirosterwidget.h \
-		$$PWD/psifilteredcontactlistview.h
+		$$PWD/psifilteredcontactlistview.h \
+		$$PWD/doceditdlg.h
 
 	SOURCES += \
 		$$PWD/contactlistview.cpp \
@@ -453,7 +455,8 @@ newcontactlist {
 		$$PWD/contactupdatesmanager.cpp \
 		$$PWD/statusmenu.cpp \
 		$$PWD/psirosterwidget.cpp \
-		$$PWD/psifilteredcontactlistview.cpp
+		$$PWD/psifilteredcontactlistview.cpp \
+		$$PWD/doceditdlg.cpp
 
 	!yapsi {
 		HEADERS += \
@@ -534,7 +537,8 @@ FORMS += \
 	$$PWD/chatdlg.ui \
 	$$PWD/bookmarkmanage.ui \
 	$$PWD/ahcommanddlg.ui \
-	$$PWD/ahcformdlg.ui
+	$$PWD/ahcformdlg.ui \
+	$$PWD/doceditdlg.ui
 
 # options dialog
 include($$PWD/options/options.pri)
