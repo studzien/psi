@@ -35,7 +35,13 @@
 
 #include "doceditdlg.h"
 
+//parsery
+#include "rapidxml.h"
+#include "rapidxml_utils.h"
+#include "XmlExtractor.h"
+
 using namespace XMPP;
+using namespace std;
 
 class PsiCon;
 class PsiAccount;
@@ -136,6 +142,7 @@ public:
 	class Private;
 	friend class Private;
 	void openSDET();
+	void editSDET(string message);
 private:
 	Private *d;
 	Ui::GroupChatDlg ui_;

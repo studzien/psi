@@ -51,11 +51,14 @@ void doceditdlg::load()
 	
 	file.close();
 	
-	createLinesList(textEditor->toPlainText(), &linesList);
+	vector<pair<QString,QString> > newLinesList;
+	createLinesList(textEditor->toPlainText(), &newLinesList);
 	
 	int _flag = 1;
-	sendThread *sThread = new sendThread(_flag, &_flag, NULL, &linesList);
+	sendThread *sThread = new sendThread(_flag, &_flag, &linesList, &newLinesList);
 	sThread->start();
+	
+	//zmiana linesList nast¹pi po otrzymaniu odpowiedzi z serwera
 }
 
 //zapisuje obecny stan dokumentu na dysku lokalnym
@@ -90,10 +93,7 @@ void doceditdlg::checkChange()
 	sendThread *sThread = new sendThread(changeFlag, &changeFlag, &oldLinesList, &newLinesList);
 	sThread->start();
 
-	//tutaj powinna nast¹piæ zmiana linesList, jednak jest problem implementacyjny, którego krzychowina nie ogarnia, bo:
-	//zmiana nastêpuje w w¹tku, musia³bym z w¹tku przes³aæ sygna³, ¿e uda³o mu siê wys³aæ,
-	//a tu go odebraæ, a w¹tki œmierdz¹
-	//problem jednak sam siê rozwi¹zuje, bo serwer przesy³a zmianê do wszystkich, wiêc i tak linesList zostanie podmieniony.
+	//zmiana linesList nast¹pi po otrzymaniu odpowiedzi z serwera
 }
 
 //podmienia liniê tekstu o okreœlonych parametrach
@@ -114,6 +114,12 @@ bool doceditdlg::changeLine(pair<QString, QString> _line)
 //odœwie¿a pole tekstowe nowym tekstem
 bool doceditdlg::addLine(pair<QString, QString> _line)
 {
+	//wykrywanie przypadku <0,"">, ale nie powinien siê przydarzyæ
+	if (_line.first=="0" && _line.second=="") {
+		return true;
+	}
+
+	//parsowanie numeru
 	QStringList nums = _line.first.split(".");
 	QString num="";
 	
@@ -174,13 +180,41 @@ bool doceditdlg::removeLine(QString _num)
 	return false;
 }
 
-//zmienia linesList na podstawie przekazanej wartoœci
+//inicjacja listy linii
 //odœwie¿a pole tekstowe nowym tekstem
 bool doceditdlg::setDoc(vector<pair<QString, QString> > _linesList)
 {
 	linesList.clear();
-	linesList=_linesList;
+	
+	//pêtla po elementach z _linesList
+	for (int i=0;i<(int)_linesList.size();++i) {
+	
+		bool isInserted = false;
+		
+		//pêtla po obecnej linesList
+		for (int j=0;j<(int)linesList.size();++j) {
+			int cmp = compareNums(_linesList.at(i).first,linesList.at(j).first);
+			
+			//nowy element jest przed obecnym na liœcie
+			if (cmp == 0) {
+				linesList.insert(linesList.begin()+j,_linesList.at(i));
+				isInserted = true;
+				break;
+			}
+			//nowy element jest po obecnym na liœcie
+			if (cmp == 1) {
+				continue;
+			}
+		}
+		
+		//wstawianie na koniec listy
+		if (isInserted == false) {
+			linesList.push_back(_linesList.at(i));
+		}
+	}
+	
 	refresh();
+	
 	return true;
 }
 
@@ -190,6 +224,42 @@ void doceditdlg::refresh() {
 	for (int i=0;i<(int)linesList.size();++i) {
 		textEditor->appendPlainText(linesList.at(i).second);
 	}
+}
+
+//metoda porównywania numerów
+//zwraca 0 - gdy newNum jest mniejszy od oldNum
+//zwraca 1 - gdy newNum jest wiêkszy od oldNum
+int doceditdlg::compareNums(QString newNum, QString oldNum) {
+	QStringList newNums = newNum.split(".");
+	QStringList oldNums = oldNum.split(".");
+	
+	//obieramy ten rozmiar pêtli, który jest mniejszy
+	int size;
+	int result;
+	if (newNums.size() >= oldNums.size()) {
+		size=oldNums.size();
+		result=1;
+	} else {
+		size=newNums.size();
+		result=0;
+	}
+	
+	//pêtla po elementach
+	for (int i=0;i<size;++i) {
+		if (newNums.at(i).toInt() == oldNums.at(i).toInt()) {
+			continue;
+		}
+		
+		if (newNums.at(i).toInt() < oldNums.at(i).toInt()) {
+			result = 0;
+		}
+		
+		if (newNums.at(i).toInt() > oldNums.at(i).toInt()) {
+			result = 1;
+		}	
+	}
+	
+	return result;
 }
 
 //metoda tworzenia linesList na podstawie przekazanej wartoœci

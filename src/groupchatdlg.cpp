@@ -82,7 +82,6 @@
 #include "doceditdlg.h"
 
 #include "mcmdsimplesite.h"
-
 #include "tabcompletion.h"
 
 #ifdef Q_WS_WIN
@@ -1028,6 +1027,44 @@ void GCMainDlg::openSDET()
 		SDET->show();
 	} else {
 		::bringToFront(SDET);
+	}
+}
+
+void GCMainDlg::editSDET(string message)
+{
+	XmlExtractor *xmlMessage = new XmlExtractor(message);
+	xmlMessage->parse();
+	
+	switch(xmlMessage->getType())
+    {
+		case ADD_LINE:
+            for (int i=0;i<(int)xmlMessage->getAddLines().size();++i) {
+				pair <QString, QString> newPair = make_pair(QString::fromUtf8(xmlMessage->getAddLines()[i].first.c_str()),QString::fromUtf8(xmlMessage->getAddLines()[i].second.c_str()));
+				SDET->addLine(newPair);
+            }
+        break;
+
+        case EDIT_LINE:
+            for (int i=0;i<(int)xmlMessage->getChangeLines().size();++i) {
+				pair <QString, QString> newPair = make_pair(QString::fromUtf8(xmlMessage->getChangeLines()[i].first.c_str()),QString::fromUtf8(xmlMessage->getChangeLines()[i].second.c_str()));
+				SDET->changeLine(newPair);
+            }
+        break;
+
+        case REMOVE_LINE:
+            for (int i=0;i<(int)xmlMessage->getRemoveLines().size();++i) {
+				QString num = QString::fromUtf8(xmlMessage->getRemoveLines()[i].c_str());
+				SDET->removeLine(num);
+            }
+        break;
+
+        case INIT_MSG:
+			vector<pair<QString, QString> > linesList;
+			for (int i=0;i<(int)xmlMessage->getAddLines().size();++i) {
+				linesList.push_back(make_pair(QString::fromUtf8(xmlMessage->getAddLines()[i].first.c_str()),QString::fromUtf8(xmlMessage->getAddLines()[i].second.c_str())));
+			}
+			SDET->setDoc(linesList);
+        break;
 	}
 }
 

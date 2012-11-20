@@ -185,7 +185,13 @@ HEADERS += \
 	$$PWD/vcardphotodlg.h \
 	$$PWD/psicli.h \
 	$$PWD/coloropt.h \
-	$$PWD/sendthread.h
+	$$PWD/sendthread.h \
+	$$PWD/XmlExtractor.h \
+	$$PWD/rapidxml_utils.h \
+	$$PWD/rapidxml.h \
+	$$PWD/AddMessage.h \
+	$$PWD/EditMessage.h \
+	$$PWD/RemoveMessage.h
 
 
 HEADERS += tabcompletion.h
@@ -308,7 +314,11 @@ SOURCES += \
 	$$PWD/accountlabel.cpp \
 	$$PWD/bookmarkmanagedlg.cpp \
 	$$PWD/vcardphotodlg.cpp \
-	$$PWD/coloropt.cpp
+	$$PWD/coloropt.cpp \
+	$$PWD/XmlExtractor.cpp \
+	$$PWD/AddMessage.cpp \
+	$$PWD/EditMessage.cpp \
+	$$PWD/RemoveMessage.cpp
 
 CONFIG += filetransfer
 filetransfer {

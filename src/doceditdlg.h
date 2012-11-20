@@ -26,6 +26,7 @@ class doceditdlg : public QWidget, private Ui::docEditWidget
 		bool addLine(pair<QString, QString> _line);
 		bool removeLine(QString _num);
 		bool setDoc(vector<pair<QString, QString> > _linesList);
+		int compareNums(QString newNum, QString oldNum);
 		
 		void refresh();
 		void createLinesList(QString text, vector<pair<QString,QString> > *_linesList);

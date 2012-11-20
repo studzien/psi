@@ -6,6 +6,10 @@
 #include <QtGui>
 #include <vector>
 
+#include "AddMessage.h"
+#include "EditMessage.h"
+#include "RemoveMessage.h"
+
 using namespace std;
 
 class sendThread : public QThread
@@ -37,16 +41,41 @@ class sendThread : public QThread
 			 * nale¿y porównaæ te dwa pliki i stworzyæ odpowiednie wiadomoœci xmpp, czyli de facto wykryæ zmiany
 			 * trzeba bêdzie tu jeszcze przekazaæ te jakieœ pierdo³y lub inaczej ich u¿yæ do samego wysy³ania, 
 			 * z tym ju¿ siê nie bawi³em, wiêc nie pomogê
-			 * jeœli oldLinesList jest NULL, to znaczy, ¿e trzeba wys³aæ nowy dokument, czyli ktoœ zrobi³ load nowego pliku
-			 * po wszystkim bardzo prosi³bym o
-			 * oldLinesList->clear();
-			 * newLinesList->clear();
-			 * delete w sumie te¿ mo¿esz :)
 			 * w przypadku b³êdu mo¿na wyœwietliæ komunikat:
 			 * QMessageBox msgBox;
 			 * msgBox.setText("send");
 			 * msgBox.exec();*/
+			 
+			//usuwanie linii
+			/*
+			vector<string> linesToRemove;
+			linesToRemove.push_back("3");
+			linesToRemove.push_back("4.2.3");
+
+			RemoveMessage *xmlRemove = new RemoveMessage("www.from", "www.to", linesToRemove);
+			xmlRemove->buildMessage();
+			cout << xmlRemove->message;
+			*/
 			
+			//dodawanie linii
+			/*
+			vector<pair<string, string> > linesToAdd;
+			linesToAdd.push_back(make_pair("5", "Tresc linii"));
+
+			AddMessage *xmlAdd = new AddMessage("www.from", "www.to", linesToAdd);
+			xmlAdd->buildMessage();
+			xmlAdd->message;
+			*/
+			
+			//edycja linii
+			/*
+			vector<pair<string, string> > linesToEdit;
+			linesToEdit.push_back(make_pair("8", "%% factorial"));
+
+			EditMessage *xmlEdit = new EditMessage("www.from", "www.to", linesToEdit);
+			xmlEdit->buildMessage();
+			cout << xmlEdit->message;
+			*/
 		}
 		
 	protected:
@@ -56,9 +85,6 @@ class sendThread : public QThread
 			msleep(2500);
 			if (flag == *sendFlag) {
 				send();
-			} else {
-				//oldLinesList->clear();
-				//newLinesList->clear();
 			}
 		}
 };
