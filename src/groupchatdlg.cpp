@@ -632,6 +632,11 @@ public:
 GCMainDlg::GCMainDlg(PsiAccount *pa, const Jid &j, TabManager *tabManager)
 	: TabbableWidget(j.bare(), pa, tabManager)
 {
+	//sxe messages
+	psiAccount = pa;
+	psiAccount->dialogRegister(this);
+	connect(psiAccount->client(), SIGNAL(xmlIncoming(const QString &)), SLOT(sxe_xmlIncoming(const QString &)));
+	
 	setAttribute(Qt::WA_DeleteOnClose);
 	nicknumber=0;
 	d = new Private(this);
@@ -949,6 +954,7 @@ void GCMainDlg::mle_returnPressed()
 
 	if(str.toLower().startsWith("/nick ")) {
 		QString nick = str.mid(6).trimmed();
+		
     XMPP::Jid newJid = jid().withResource(nick);
 		if (!nick.isEmpty() && newJid.isValid()) {
 			d->prev_self = d->self;
@@ -1022,11 +1028,19 @@ void GCMainDlg::activateSDET()
 void GCMainDlg::openSDET()
 {
 	if (SDET == NULL) {
-		SDET = new doceditdlg(this);
+		SDET = new doceditdlg(this, psiAccount, jid().full());
 		SDET->setWindowTitle("Shared Document Editing Tool - "+this->windowTitle());
 		SDET->show();
 	} else {
 		::bringToFront(SDET);
+	}
+}
+
+void GCMainDlg::sxe_xmlIncoming(const QString &str)
+{
+	if (str.contains("type=\"sxe\"", Qt::CaseInsensitive)) {
+		openSDET();
+		editSDET(str.toUtf8().constData());
 	}
 }
 

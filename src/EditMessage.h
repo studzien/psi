@@ -8,11 +8,11 @@ class EditMessage
     string message;
 
     private:
-    string from, to;
+    string to;
     vector<pair<string, string> > lines;
 
     public:
     EditMessage(string);
-    EditMessage(string, string, vector<pair<string, string> >);
-    string buildMessage();
+    EditMessage(string, vector<pair<string, string> >);
+    void buildMessage();
 };

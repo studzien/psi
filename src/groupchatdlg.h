@@ -32,6 +32,7 @@
 #include "ui_groupchatdlg.h"
 #include "mucmanager.h"
 #include "advwidget.h"
+#include "xmpp_client.h"
 
 #include "doceditdlg.h"
 
@@ -39,6 +40,7 @@
 #include "rapidxml.h"
 #include "rapidxml_utils.h"
 #include "XmlExtractor.h"
+#include "psiaccount.h"
 
 using namespace XMPP;
 using namespace std;
@@ -108,6 +110,7 @@ public slots:
 	virtual void deactivated();
 	virtual void activated();
 	virtual void ensureTabbedCorrectly();
+	void sxe_xmlIncoming(const QString &);
 
 	void optionsUpdate();
 	
@@ -145,6 +148,8 @@ public:
 	void editSDET(string message);
 private:
 	Private *d;
+	PsiAccount *psiAccount;
+	
 	Ui::GroupChatDlg ui_;
 
 	void doAlert();

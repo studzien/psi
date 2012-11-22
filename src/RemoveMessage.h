@@ -6,11 +6,11 @@ class RemoveMessage
     string message;
 
     private:
-    string from, to;
+    string to;
     vector<string> lines;
 
     public:
     RemoveMessage(string);
-    RemoveMessage(string, string, vector<string>);
-    string buildMessage();
+    RemoveMessage(string, vector<string>);
+    void buildMessage();
 };

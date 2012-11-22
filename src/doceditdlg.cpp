@@ -9,17 +9,19 @@
 #include "psiaccount.h"
 #include "sendthread.h"
 
-using namespace XMPP;
-
 //konstruktor
-doceditdlg::doceditdlg(QWidget *parent)
+doceditdlg::doceditdlg(QWidget *parent, PsiAccount* pa, QString _to)
 {
     setupUi(this);
+	psiAccount=pa;
+	to=_to;
 	
 	changeFlag = 0;
- 
+	linesList.push_back(make_pair("1",""));
+	
     connect(saveButton, SIGNAL(clicked()), this, SLOT(save())); 
     connect(loadButton, SIGNAL(clicked()), this, SLOT(load()));
+	//dirty trick
 	connect(textEditor, SIGNAL(textChanged()), this, SLOT(checkChange()));
 }
 
@@ -51,14 +53,7 @@ void doceditdlg::load()
 	
 	file.close();
 	
-	vector<pair<QString,QString> > newLinesList;
-	createLinesList(textEditor->toPlainText(), &newLinesList);
-	
-	int _flag = 1;
-	sendThread *sThread = new sendThread(_flag, &_flag, &linesList, &newLinesList);
-	sThread->start();
-	
-	//zmiana linesList nast¹pi po otrzymaniu odpowiedzi z serwera
+	//zmiany zostan¹ tu wykryte automatycznie przez checkChange()
 }
 
 //zapisuje obecny stan dokumentu na dysku lokalnym
@@ -81,16 +76,16 @@ void doceditdlg::save()
 //przekazuje w¹tkowi flagi
 //przekazuje w¹tkowi referencje do tekstu
 void doceditdlg::checkChange()
-{	
+{
 	if (changeFlag == 1000) changeFlag=0;
 	
 	++changeFlag;
 	
 	vector<pair<QString, QString> > oldLinesList(linesList);
-	vector<pair<QString, QString> > newLinesList;
+	vector<pair<QString,QString> > newLinesList;
 	createLinesList(textEditor->toPlainText(), &newLinesList);
 	
-	sendThread *sThread = new sendThread(changeFlag, &changeFlag, &oldLinesList, &newLinesList);
+	sendThread *sThread = new sendThread(changeFlag, &changeFlag, &oldLinesList, &newLinesList, psiAccount, to);
 	sThread->start();
 
 	//zmiana linesList nast¹pi po otrzymaniu odpowiedzi z serwera
@@ -137,7 +132,7 @@ bool doceditdlg::addLine(pair<QString, QString> _line)
 	//ostatnia linia, wykorzystujemy tu fakt, ¿e ostatnia linia, zawsze jest ca³kowita
 	int lastnum = linesList.back().first.toInt();
 	++lastnum;
-	
+
 	if (QString::compare(num,QString::number(lastnum),Qt::CaseSensitive)==0) {
 		linesList.push_back(_line);
 		refresh();
@@ -189,6 +184,11 @@ bool doceditdlg::setDoc(vector<pair<QString, QString> > _linesList)
 	//pêtla po elementach z _linesList
 	for (int i=0;i<(int)_linesList.size();++i) {
 	
+		//wykrywanie przypadku <0,"">
+		if (_linesList.at(i).first=="0" && _linesList.at(i).second=="") {
+			continue;
+		}
+	
 		bool isInserted = false;
 		
 		//pêtla po obecnej linesList
@@ -213,7 +213,14 @@ bool doceditdlg::setDoc(vector<pair<QString, QString> > _linesList)
 		}
 	}
 	
+	if (linesList.size()==0) {
+		linesList.push_back(make_pair("1",""));
+	}
+	
 	refresh();
+	
+	//³aczenie slotu po tym jak zostanie przekazana wiadomoœæ inicjalizacji
+	//connect(textEditor, SIGNAL(textChanged()), this, SLOT(checkChange()));
 	
 	return true;
 }
@@ -221,6 +228,18 @@ bool doceditdlg::setDoc(vector<pair<QString, QString> > _linesList)
 //metoda odœwie¿ania pola textarea obecnym stanem linesList
 void doceditdlg::refresh() {
 	textEditor->clear();
+	
+	//sprawdzanie duplikatow
+	
+	QString comparison = linesList.at(0).first;
+	for (int i=1;i<(int)linesList.size();++i) {
+		if (QString::compare(comparison,linesList.at(i).first,Qt::CaseSensitive)==0) {
+			linesList.erase(linesList.begin()+i);
+			continue;
+		}
+		comparison = linesList.at(i).first;
+	}
+	
 	for (int i=0;i<(int)linesList.size();++i) {
 		textEditor->appendPlainText(linesList.at(i).second);
 	}

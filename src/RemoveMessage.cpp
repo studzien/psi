@@ -4,35 +4,34 @@
 
 using namespace std;
 
-string RemoveMessage::buildMessage()
+void RemoveMessage::buildMessage()
 {
-    string result = "<message from='";
-    result += from;
-    result += "' to='";\
+    string result = "<message to='";
     result += to;
     result += "' type='sxe'>\n";
     result += "\t<sxe xmlns='urn:xmpp:sxe:0'>\n";
 
-    for(int i = 0; i < lines.size() ; i++)
+    for(int i = 0; i < (int)lines.size() ; i++)
     {
         result += "\t\t<remove target='line-";
-        result += lines[i];
+        result += lines.at(i);
         result += "'/>\n";
     }
 
     result += "\t</sxe>\n";
     result += "</message>";
 
-    message = result;;
+    message = result;
 }
 
 RemoveMessage::RemoveMessage(string _message)
 {
     message = _message;
 }
-RemoveMessage::RemoveMessage(string _from, string _to, vector<string> _lines)
+RemoveMessage::RemoveMessage(string _to, vector<string> _lines)
 {
-    from = _from;
     to = _to;
-    lines = _lines;
+    for (int i=0;i<(int)_lines.size();++i) {
+        lines.push_back(_lines.at(i));
+    }
 }

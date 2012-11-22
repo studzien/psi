@@ -14,13 +14,15 @@
 
 using namespace std;
 
+class PsiAccount;
+
 class doceditdlg : public QWidget, private Ui::docEditWidget
 {
 
 	Q_OBJECT
 
 	public:
-		doceditdlg(QWidget *parent=0);
+		doceditdlg(QWidget *parent=0, PsiAccount* pa=0, QString to="");
 		
 		bool changeLine(pair<QString, QString> _line);
 		bool addLine(pair<QString, QString> _line);
@@ -39,7 +41,8 @@ class doceditdlg : public QWidget, private Ui::docEditWidget
 	private:
 		int changeFlag;
 		vector<pair<QString, QString> > linesList;
-		
+		PsiAccount* psiAccount;
+		QString to;
 };
 
 #endif

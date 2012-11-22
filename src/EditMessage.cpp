@@ -4,37 +4,36 @@
 
 using namespace std;
 
-string EditMessage::buildMessage()
+void EditMessage::buildMessage()
 {
-    string result = "<message from='";
-    result += from;
-    result += "' to='";\
+    string result = "<message to='";
     result += to;
     result += "' type='sxe'>\n";
     result += "\t<sxe xmlns='urn:xmpp:sxe:0'>\n";
 
-    for(int i = 0; i < lines.size() ; i++)
+    for(int i = 0; i < (int)lines.size() ; i++)
     {
         result += "\t\t<set chdata='";
-        result += lines[i].second;
+        result += lines.at(i).second;
         result += "' target='line-";
-        result += lines[i].first;
+        result += lines.at(i).first;
         result += "'/>\n";
     }
 
     result += "\t</sxe>\n";
     result += "</message>";
 
-    message = result;;
+    message = result;
 }
 
 EditMessage::EditMessage(string _message)
 {
     message = _message;
 }
-EditMessage::EditMessage(string _from, string _to, vector<pair<string, string> > _lines)
+EditMessage::EditMessage(string _to, vector<pair<string, string> > _lines)
 {
-    from = _from;
     to = _to;
-    lines = _lines;
+    for (int i=0;i<(int)_lines.size();++i) {
+        lines.push_back(_lines.at(i));
+    }
 }
